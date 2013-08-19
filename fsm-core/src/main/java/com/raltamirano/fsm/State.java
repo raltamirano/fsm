@@ -1,11 +1,14 @@
 package com.raltamirano.fsm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.raltamirano.fsm.exceptions.FSMException;
 
 public class State {
 	private final String name;
-	private Action entryAction;
-	private Action exitAction;
+	private final List<Action> entryActions;
+	private final List<Action> exitActions;
 
 	public State(String name) {
 		if (name == null) {
@@ -13,25 +16,30 @@ public class State {
 		}
 		
 		this.name = name;
+		this.entryActions = new ArrayList<Action>();
+		this.exitActions = new ArrayList<Action>();
 	}
 
 	public State(String name, Action entryAction, Action exitAction) {
 		this(name);
 		
-		this.entryAction = entryAction;
-		this.exitAction = exitAction;
+		if (entryAction != null)
+			this.entryActions.add(entryAction);
+		
+		if (exitAction != null)
+			this.exitActions.add(exitAction);
 	}
 	
 	public String getName() {
 		return this.name;
 	}
 
-	public Action getEntryAction() {
-		return this.entryAction;
+	public List<Action> getEntryActions() {
+		return this.entryActions;
 	}
 
-	public Action getExitAction() {
-		return this.exitAction;
+	public List<Action> getExitActions() {
+		return this.exitActions;
 	}
 	
 	@Override

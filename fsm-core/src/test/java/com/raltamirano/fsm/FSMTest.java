@@ -8,6 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import com.raltamirano.fsm.actions.ErrorAction;
 import com.raltamirano.fsm.conditions.AlwaysTrue;
 import com.raltamirano.fsm.conditions.VariableValueExpected;
 import com.raltamirano.fsm.conditions.VariableValueNotInDomain;
@@ -34,13 +35,7 @@ public class FSMTest
 		// States for this FSM
 		State openDoor = new State("open");
 		State closedDoor = new State("closed");
-		State errorState = new State("error", 
-				new Action() {					
-					public void execute(Context context) {
-						System.err.println("Oops! An error has occured!");
-						context.dump();
-					}
-				}, null);
+		State errorState = new State("error", ErrorAction.withMessage("Oops! An error has occured!"), null);
 		
 		List<State> states = new ArrayList<State>();
 		states.add(openDoor);
@@ -48,14 +43,14 @@ public class FSMTest
 		states.add(errorState);
 
 		// State transition table
-		List<TransitionRule> stateTransitionTable = new ArrayList<TransitionRule>();
-		stateTransitionTable.add(new TransitionRule(openDoor, new VariableValueExpected(INPUT1, "open"), openDoor));
-		stateTransitionTable.add(new TransitionRule(openDoor, new VariableValueExpected(INPUT1, "close"), closedDoor));
-		stateTransitionTable.add(new TransitionRule(openDoor, new VariableValueNotInDomain(INPUT1, new Object[] {"open", "close"}), errorState));
-		stateTransitionTable.add(new TransitionRule(closedDoor, new VariableValueExpected(INPUT1, "open"), openDoor));
-		stateTransitionTable.add(new TransitionRule(closedDoor, new VariableValueExpected(INPUT1, "close"), closedDoor));
-		stateTransitionTable.add(new TransitionRule(closedDoor, new VariableValueNotInDomain(INPUT1, new Object[] {"open", "close"}), errorState));
-		stateTransitionTable.add(new TransitionRule(errorState, AlwaysTrue.getInstance(), errorState));
+		List<Transition> stateTransitionTable = new ArrayList<Transition>();
+		stateTransitionTable.add(new Transition(openDoor, new VariableValueExpected(INPUT1, "open"), openDoor));
+		stateTransitionTable.add(new Transition(openDoor, new VariableValueExpected(INPUT1, "close"), closedDoor));
+		stateTransitionTable.add(new Transition(openDoor, new VariableValueNotInDomain(INPUT1, new Object[] {"open", "close"}), errorState));
+		stateTransitionTable.add(new Transition(closedDoor, new VariableValueExpected(INPUT1, "open"), openDoor));
+		stateTransitionTable.add(new Transition(closedDoor, new VariableValueExpected(INPUT1, "close"), closedDoor));
+		stateTransitionTable.add(new Transition(closedDoor, new VariableValueNotInDomain(INPUT1, new Object[] {"open", "close"}), errorState));
+		stateTransitionTable.add(new Transition(errorState, AlwaysTrue.getInstance(), errorState));
 		
 		// Create the FSM for a door, with 'closed' as the initial state.
 		FSM doorFSM = new FSM(states, stateTransitionTable, closedDoor);
